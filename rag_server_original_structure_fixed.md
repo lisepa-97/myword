@@ -1078,8 +1078,8 @@ src
             ├── strict-qa-system-prompt.txt
             └── query-rewrite-prompt.txt
 ```
+## Test Directory Structure
 ```text
-Test Directory Structure
 src
 └── test
     └── java

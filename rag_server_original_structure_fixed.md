@@ -1,5 +1,3 @@
-래그 서버용 md 작성하기..
-
 ## Project Overview
 
 이 프로젝트는 펫푸드 웹 쇼핑몰에서 기존 NOTICE/FAQ 게시판 방식으로 제공하던 고객 안내 기능을 대체하기 위한 문서 기반 질의응답 RAG 마이크로서비스를 구현한다.
@@ -862,6 +860,7 @@ role: user | assistant
 content: 메시지 본문
 created_at: 메시지 생성 시각
 Example
+```
 {
   "session_id": "2f0d7a3c-91af-4b21-9d12-3b4c5d6e7f80",
   "messages": [
@@ -879,6 +878,7 @@ Example
   "created_at": "2026-04-13T10:30:00Z",
   "updated_at": "2026-04-13T10:30:02Z"
 }
+```
 
 2.3 Session Policy
 Redis TTL은 기본 24시간으로 설정한다.
@@ -891,11 +891,11 @@ Redis TTL은 기본 24시간으로 설정한다.
 서비스 내부에서는 다음 도메인 모델을 사용한다.
 
 3.1 Document
-documentId
-filename
-category
-version
-status
+- documentId
+- filename
+- category
+- version
+- status
 chunkCount
 createdAt
 updatedAt

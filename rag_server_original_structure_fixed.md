@@ -833,14 +833,14 @@ Elasticsearch는 검색 및 retrieval 전용 저장소로 사용한다.
 ## 2. Redis Data Model
 
 
-Redis는 세션 기반 대화 히스토리 저장소로 사용한다.
-Redis는 본 서비스 전용 저장소를 사용하며, 다른 서비스와 공유하지 않는다.
+- Redis는 세션 기반 대화 히스토리 저장소로 사용한다.
+- Redis는 본 서비스 전용 저장소를 사용하며, 다른 서비스와 공유하지 않는다.
 
 2.1 Key Strategy
 
-세션 데이터는 다음 패턴의 key를 사용한다.
+- 세션 데이터는 다음 패턴의 key를 사용한다.
 
-rag:session:{session_id}
+- rag:session:{session_id}
 
 예:
 ```
@@ -848,18 +848,18 @@ rag:session:2f0d7a3c-91af-4b21-9d12-3b4c5d6e7f80
 ```
 2.2 Session Schema
 
-세션은 대화 메시지 목록과 메타데이터를 포함한다.
+- 세션은 대화 메시지 목록과 메타데이터를 포함한다.
 
-Fields
-session_id: 세션 식별자
-messages: 대화 메시지 리스트
-created_at: 세션 생성 시각
-updated_at: 마지막 갱신 시각
-Message Schema
-role: user | assistant
-content: 메시지 본문
-created_at: 메시지 생성 시각
-Example
+### Fields
+- session_id: 세션 식별자
+- messages: 대화 메시지 리스트
+- created_at: 세션 생성 시각
+- updated_at: 마지막 갱신 시각
+### Message Schema
+- role: user | assistant
+- content: 메시지 본문
+- created_at: 메시지 생성 시각
+### Example
 ```
 {
   "session_id": "2f0d7a3c-91af-4b21-9d12-3b4c5d6e7f80",
@@ -881,14 +881,14 @@ Example
 ```
 
 2.3 Session Policy
-Redis TTL은 기본 24시간으로 설정한다. <br>
-세션은 마지막 접근 시 TTL이 연장되는 sliding expiration 정책을 사용한다. <br>
-최근 메시지 10~20개만 유지한다.
-오래된 메시지는 trimming 한다.
+- Redis TTL은 기본 24시간으로 설정한다.
+- 세션은 마지막 접근 시 TTL이 연장되는 sliding expiration 정책을 사용한다.
+- 최근 메시지 10~20개만 유지한다.
+- 오래된 메시지는 trimming 한다.
 
 3. Logical Domain Model
 
-서비스 내부에서는 다음 도메인 모델을 사용한다.
+- 서비스 내부에서는 다음 도메인 모델을 사용한다.
 
 3.1 Document
 - documentId
@@ -896,46 +896,51 @@ Redis TTL은 기본 24시간으로 설정한다. <br>
 - category
 - version
 - status
-chunkCount
-createdAt
-updatedAt
+- chunkCount
+- createdAt
+- updatedAt
+  
 3.2 Chunk
-chunkId
-documentId
-documentVersion
-chunkIndex
-heading
-text
-embedding
-active
-createdAt
-updatedAt
+- chunkId
+- documentId
+- documentVersion
+- chunkIndex
+- heading
+- text
+- embedding
+- active
+- createdAt
+- updatedAt
+
 3.3 ChatSession
-sessionId
-messages
-createdAt
-updatedAt
+- sessionId
+- messages
+- createdAt
+- updatedAt
+  
 3.4 ChatMessage
-role
-content
-createdAt
+- role
+- content
+- createdAt
+  
 3.5 ChatResponse
-sessionId
-answer
-sources
+- sessionId
+- answer
+- sources
+  
 3.6 Source
-documentId
-filename
-chunkId
-text
+- documentId
+- filename
+- chunkId
+- text
 
 4. Data Access Rules
-Elasticsearch는 검색 전용으로 사용한다.
-Redis는 세션 상태 저장 전용으로 사용한다.
-세션 데이터를 Elasticsearch에 저장하지 않는다.
-검색 결과 생성 시 Elasticsearch chunk 데이터를 source로 사용한다.
-답변 생성 후 사용자 질문과 모델 응답은 Redis 세션에 append 한다.
-서비스 간 데이터 연동은 저장소 공유가 아니라 API 또는 이벤트를 통해 수행한다.
+- Elasticsearch는 검색 전용으로 사용한다.
+- Redis는 세션 상태 저장 전용으로 사용한다.
+- 세션 데이터를 Elasticsearch에 저장하지 않는다.
+- 검색 결과 생성 시 Elasticsearch chunk 데이터를 source로 사용한다.
+- 답변 생성 후 사용자 질문과 모델 응답은 Redis 세션에 append 한다.
+- 서비스 간 데이터 연동은 저장소 공유가 아니라 API 또는 이벤트를 통해 수행한다.
 
 ## Directory Structure
 

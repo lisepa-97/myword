@@ -1077,7 +1077,8 @@ src
         └── prompts
             ├── strict-qa-system-prompt.txt
             └── query-rewrite-prompt.txt
-
+```
+```text
 Test Directory Structure
 src
 └── test
@@ -1091,16 +1092,17 @@ src
                     ├── embedding
                     ├── llm
                     └── integration
+```
 
-Directory Structure Principles
-document 패키지는 문서 업로드, 파싱, cleaning, chunking, indexing 책임을 가진다.
-chat 패키지는 질의응답, 세션 관리, 멀티턴 처리 책임을 가진다.
-retrieval 패키지는 Elasticsearch 하이브리드 검색과 context 구성 책임을 가진다.
-embedding 패키지는 임베딩 생성 책임을 가진다.
-llm 패키지는 LLM 호출 및 답변 생성 책임을 가진다.
-infra 패키지는 Elasticsearch, Redis 등 외부 저장소 연동 구현을 가진다.
-common 패키지는 공통 설정, 예외, 응답 모델, 유틸리티를 가진다.
-프롬프트 템플릿은 코드 하드코딩 대신 resources/prompts 아래에서 관리한다.
+## Directory Structure Principles
+- document 패키지는 문서 업로드, 파싱, cleaning, chunking, indexing 책임을 가진다.
+- chat 패키지는 질의응답, 세션 관리, 멀티턴 처리 책임을 가진다.
+- retrieval 패키지는 Elasticsearch 하이브리드 검색과 context 구성 책임을 가진다.
+- embedding 패키지는 임베딩 생성 책임을 가진다.
+- llm 패키지는 LLM 호출 및 답변 생성 책임을 가진다.
+- infra 패키지는 Elasticsearch, Redis 등 외부 저장소 연동 구현을 가진다.
+- common 패키지는 공통 설정, 예외, 응답 모델, 유틸리티를 가진다.
+- 프롬프트 템플릿은 코드 하드코딩 대신 resources/prompts 아래에서 관리한다.
 
 ## Package Design Rules
 

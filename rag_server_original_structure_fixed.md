@@ -843,9 +843,9 @@ Redis는 본 서비스 전용 저장소를 사용하며, 다른 서비스와 공
 rag:session:{session_id}
 
 예:
-
+```
 rag:session:2f0d7a3c-91af-4b21-9d12-3b4c5d6e7f80
-
+```
 2.2 Session Schema
 
 세션은 대화 메시지 목록과 메타데이터를 포함한다.
@@ -881,8 +881,8 @@ Example
 ```
 
 2.3 Session Policy
-Redis TTL은 기본 24시간으로 설정한다.
-세션은 마지막 접근 시 TTL이 연장되는 sliding expiration 정책을 사용한다.
+Redis TTL은 기본 24시간으로 설정한다. <br>
+세션은 마지막 접근 시 TTL이 연장되는 sliding expiration 정책을 사용한다. <br>
 최근 메시지 10~20개만 유지한다.
 오래된 메시지는 trimming 한다.
 

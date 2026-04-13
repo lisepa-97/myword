@@ -317,7 +317,7 @@
 - `category` (optional): FAQ | NOTICE | POLICY
 
 #### Response
-json
+```json
 {
   "document_id": "9d8e1f4c-6c7a-4a6a-b4e2-1a2b3c4d5e6f",
   "filename": "refund_policy.pdf",
@@ -325,7 +325,7 @@ json
   "status": "uploaded",
   "message": "Document uploaded successfully. Indexing started asynchronously."
 }
-
+```
 2. Document Status
 GET /api/v1/rag/documents/{document_id}
 

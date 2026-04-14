@@ -1385,7 +1385,7 @@ src
 완료 기준:
 - context 기반 한국어 답변이 생성된다.
 - context에 없는 내용은 추측하지 않는다.
-EXAMPLE FEW SHOT 1)
+#### EXAMPLE FEW SHOT 1)
 ```TEXT
 Context:
 이 강아지 사료는 닭고기와 고구마를 주원료로 사용하며, 곡물은 포함되어 있지 않다.
@@ -1397,7 +1397,7 @@ Answer:
 아니요. 곡물은 포함되어 있지 않습니다.
 ```
 
-EXAMPLE FEW SHOT 2)
+#### EXAMPLE FEW SHOT 2)
 ```TEXT
 Context:
 이 고양이 간식은 참치와 연어로 만들어졌으며, 하루 권장 급여량은 2개이다.

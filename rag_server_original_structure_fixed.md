@@ -62,7 +62,7 @@
 - Spring Actuator
 
 ### Search / Retrieval
-- Elasticsearch
+- Elasticsearch 8.18.0
 - Spring Data Elasticsearch
 - 본 서비스 전용 Elasticsearch 인덱스를 사용한다.
 - BM25 기반 lexical 검색
@@ -584,7 +584,11 @@
 - 지정한 chunk size를 초과하는 경우에만 길이 기반 추가 분할을 수행한다.
 - overlap은 이전 chunk의 마지막 120 token 상당 텍스트를 다음 chunk 앞부분에 포함하는 방식으로 적용한다.
 - 토큰 추정 로직은 애플리케이션 전역에서 일관되게 사용한다.
-
+- chunk size와 overlap 계산을 위한 토큰 추정기는 Java 라이브러리 `knuddels/jtokkit`을 사용한다.
+- tokenizer는 chunking 단계의 일관된 길이 제어를 위한 추정 용도로 사용한다.
+- Gemini 모델의 실제 내부 토큰 수와 완전히 일치할 필요는 없으며, 서비스 내부에서 일관된 기준을 제공하는 것을 우선한다.
+- 의미 단위 분할(heading / paragraph)을 우선 적용한 뒤, 토큰 수 초과 시 추가 분할을 수행한다.
+- TokenEstimator는 공통 유틸 또는 전용 컴포넌트로 분리하여 chunking 전역에서 동일하게 사용한다.
 
 ---
 
@@ -1187,10 +1191,12 @@ src
 - Jib 설정
 - Docker Compose 실행 환경 구성
 - Spring Actuator 설정
+- Spring Cloud Vault 설정 추가 (dev / prod)
+- local 환경용 환경 변수 / local profile fallback 구성
 
 완료 기준:
 - 애플리케이션이 로컬에서 정상 실행된다.
-- `/actuator/health` 응답이 정상 반환된다.
+- /actuator/health` 응답이 정상 반환된다.
 
 ---
 
@@ -1765,6 +1771,13 @@ Jenkins CI 연동은 후속 작업으로 제외
   - application-local.yml
   - application-dev.yml
   - application-prod.yml
+
+### 4-1. Vault Integration Policy
+
+- 운영 및 개발 서버 환경에서는 Spring Cloud Vault를 사용하여 시크릿을 주입한다.
+- 로컬 개발 환경에서는 환경 변수 또는 application-local.yml 기반 설정을 허용한다.
+- 민감한 설정값(API Key, Redis/Elasticsearch 인증 정보 등)은 dev/prod 환경에서 application.yml에 직접 저장하지 않는다.
+- Vault 연동은 Bootstrap 단계에서 설정하며, 서비스 시작 시 필요한 시크릿을 로딩할 수 있어야 한다.
 
 ### 5. Configuration Policy
 - 모든 설정값은 외부 설정으로 관리한다.

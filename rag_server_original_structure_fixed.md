@@ -527,6 +527,20 @@
   - chunk 품질 향상
   - retrieval 정확도 개선
 
+#### Markdown Conversion Policy
+
+- 문서 파싱 결과는 검색과 청킹 품질 향상을 위해 Markdown 형식으로 정규화한다.
+- 제목 계층은 가능한 한 보존한다.
+  - 최상위 제목: #
+  - 하위 제목: ##, ###
+- 목록은 '-' 형식의 bullet list로 정규화한다.
+- 표(table)는 원형 보존이 어려운 경우 행 단위 텍스트로 평탄화한다.
+- 빈 줄은 문단 구분을 위해 1개만 유지한다.
+- 연속 공백은 1개 공백으로 정규화한다.
+- 페이지 번호, 반복 헤더/푸터, 의미 없는 장식 텍스트는 제거한다.
+- 링크, 이미지, 스타일 정보는 보존 대상이 아니며 텍스트 중심으로 변환한다.
+- Markdown 변환 결과는 chunking의 입력 원본으로 사용한다.
+
 ---
 
 ### 1.3 Text Cleaning
@@ -560,6 +574,17 @@
 #### 이유
 - 650: FAQ/정책 문서에서 context 유지 + noise 최소화 균형
 - 120: 문맥 연결 유지 + 중복 최소화
+
+### Token Estimation Policy
+
+- chunk size와 overlap은 "토큰 추정치" 기준으로 계산한다.
+- 토큰 계산은 전용 TokenEstimator 컴포넌트를 통해 수행한다.
+- 1차 분할은 Markdown heading / 문단 기준으로 수행하고,
+  2차 검증 단계에서 TokenEstimator로 길이를 확인한다.
+- 지정한 chunk size를 초과하는 경우에만 길이 기반 추가 분할을 수행한다.
+- overlap은 이전 chunk의 마지막 120 token 상당 텍스트를 다음 chunk 앞부분에 포함하는 방식으로 적용한다.
+- 토큰 추정 로직은 애플리케이션 전역에서 일관되게 사용한다.
+
 
 ---
 
@@ -819,6 +844,17 @@ Elasticsearch는 검색 및 retrieval 전용 저장소로 사용한다.
 - semantic 검색은 `embedding` 필드를 기준으로 수행한다.
 - retrieval 대상은 `active=true` 인 chunk로 제한한다.
 
+#### Hybrid Retrieval Execution Policy
+
+- 하이브리드 검색은 lexical 검색과 semantic 검색을 각각 독립적으로 수행한다.
+- lexical 검색은 BM25 query로 수행한다.
+- semantic 검색은 dense vector kNN query로 수행한다.
+- 두 검색 결과의 결합은 애플리케이션 레벨에서 RRF를 계산하여 수행한다.
+- Elasticsearch의 단일 hybrid query 또는 sub_searches 기능에 직접 의존하지 않는다.
+- RRF 계산 로직은 RetrievalService 내부의 명시적 컴포넌트로 분리한다.
+- 동일 chunk_id가 양쪽 결과에 존재할 경우 하나의 문서로 병합한다.
+- 최종 정렬은 RRF score 기준으로 수행한다.
+
 ### 1.4 Re-indexing Model
 
 문서 재업로드 시 version 기반 재색인을 사용한다.
@@ -885,6 +921,23 @@ rag:session:2f0d7a3c-91af-4b21-9d12-3b4c5d6e7f80
 - 세션은 마지막 접근 시 TTL이 연장되는 sliding expiration 정책을 사용한다.
 - 최근 메시지 10~20개만 유지한다.
 - 오래된 메시지는 trimming 한다.
+
+### Redis Session Storage Policy
+
+- Redis는 세션 저장소로 사용한다.
+- 세션 메타데이터는 Hash 구조로 저장한다.
+- 대화 메시지 히스토리는 List 구조로 저장한다.
+- 권장 key 구조는 다음과 같다.
+  - rag:session:{session_id}:meta
+  - rag:session:{session_id}:messages
+- meta hash에는 다음 필드를 저장한다.
+  - session_id
+  - created_at
+  - updated_at
+- messages list에는 role/content/created_at 정보를 JSON 직렬화하여 append 한다.
+- 최근 메시지 10~20개만 유지하도록 list trimming을 수행한다.
+- TTL은 세션 관련 key 모두에 동일하게 적용한다.
+- 세션 접근 시 sliding expiration 방식으로 TTL을 갱신한다.
 
 3. Logical Domain Model
 

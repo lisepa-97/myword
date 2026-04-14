@@ -253,6 +253,11 @@
 - 헬스체크 및 기본 메트릭은 Spring Boot Actuator를 통해 제공해야 한다.
 - retrieval latency, LLM latency, indexing latency를 추적 가능해야 한다.
 
+### 13. Document Upload
+- 문서 업로드 요청은 동기적으로 접수하되, 실제 색인 작업은 비동기로 수행해야 한다.
+- 업로드 API는 document_id와 초기 상태를 즉시 반환해야 한다.
+- 색인 작업은 백그라운드에서 수행되며, 상태는 uploaded → processing → processed 또는 failed 로 전이되어야 한다.
+
 
 ## Non-Functional Requirements
 
@@ -1314,6 +1319,10 @@ src
 - 상태 전이 처리
 - 실패 로그 및 예외 처리
 - 재색인 흐름 구현
+- 업로드 API 응답과 색인 작업을 분리한다.
+- 파일 업로드 응답은 즉시 반환하고, 색인 작업은 백그라운드에서 수행한다.
+- 비동기 실행은 Spring Events 또는 CompletableFuture 기반으로 구현한다.
+- 상태 전이(uploaded → processing → processed / failed)를 기록한다.
 
 완료 기준:
 - 업로드 API는 빠르게 반환된다.
@@ -1593,6 +1602,11 @@ Jenkins CI 연동은 후속 작업으로 제외
 ### 13. API Rules
 - 모든 비즈니스 API는 `/api/v1/rag` 하위 경로를 사용한다.
 - 운영용 endpoint는 Actuator 경로로 분리한다.
+
+### 14. Asynchronous Processing
+- 문서 업로드 API는 색인 완료를 기다리지 않고 즉시 응답해야 한다.
+- 문서 색인 작업은 Spring Events 또는 CompletableFuture 기반의 백그라운드 처리로 구현한다.
+- 업로드 요청 처리와 색인 처리는 동일한 요청 스레드에서 끝까지 수행하지 않는다.
 
 ## Test Requirements
 

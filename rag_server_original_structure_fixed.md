@@ -4,7 +4,7 @@
 
 이 서비스는 REST API를 통해 호출되며, 업로드된 문서를 파싱(parse)하고 불필요한 내용을 제거(clean)한 뒤, 의미 단위로 청킹(chunking)하여 임베딩을 생성하고 벡터 데이터베이스에 저장한다.
 
-사용자가 질문을 입력하면, 서비스는 필요 시 대화 히스토리를 기반으로 질문을 standalone query로 재작성하고, 해당 질문을 임베딩으로 변환한 뒤 벡터 검색을 수행하여 관련 문서 조각을 retrieval 한다.
+사용자가 질문을 입력하면, 7서비스는 필요 시 대화 히스토리를 기반으로 질문을 standalone query로 재작성하고, 해당 질문을 임베딩으로 변환한 뒤 벡터 검색을 수행하여 관련 문서 조각을 retrieval 한다.
 
 검색된 문서는 LLM의 입력 context로 사용되며, LLM은 제공된 context에 기반하여 근거 있는 답변을 생성해야 한다. Context에 없는 내용은 추측하지 않아야 한다.
 
@@ -1297,6 +1297,7 @@ src
 - chunk indexing 구현
 - document version / active 필드 반영
 - 문서 상태 관리(uploaded, processing, processed, failed)
+- dense_vector 필드 정의 시 사용하시는 임베딩 모델(Gemini)의 차원 수 1536으로 구현.
 
 완료 기준:
 - chunk가 Elasticsearch에 저장된다.
@@ -1384,7 +1385,29 @@ src
 완료 기준:
 - context 기반 한국어 답변이 생성된다.
 - context에 없는 내용은 추측하지 않는다.
+EXAMPLE FEW SHOT 1)
+```TEXT
+Context:
+이 강아지 사료는 닭고기와 고구마를 주원료로 사용하며, 곡물은 포함되어 있지 않다.
 
+Question:
+이 사료는 곡물이 들어있는가?
+
+Answer:
+아니요. 곡물은 포함되어 있지 않습니다.
+```
+
+EXAMPLE FEW SHOT 2)
+```TEXT
+Context:
+이 고양이 간식은 참치와 연어로 만들어졌으며, 하루 권장 급여량은 2개이다.
+
+Question:
+이 간식은 하루에 몇 개까지 줄 수 있는가?
+
+Answer:
+하루 권장 급여량은 2개입니다.
+```
 ---
 
 ### Phase 13. Chat API
